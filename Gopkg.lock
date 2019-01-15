@@ -128,6 +128,40 @@
 
 [[projects]]
   branch = "master"
+  digest = "1:335dcbd8cb00f981151c93c2d0103a234b0472b4afb7c5891bac3c0b96e73918"
+  name = "github.com/zmap/zgrab"
+  packages = [
+    "zlib",
+    "ztools/ftp",
+    "ztools/http",
+    "ztools/http/cookiejar",
+    "ztools/http/httptest",
+    "ztools/http/httptrace",
+    "ztools/http/httputil",
+    "ztools/http/nettrace",
+    "ztools/processing",
+    "ztools/scada/bacnet",
+    "ztools/scada/dnp3",
+    "ztools/scada/fox",
+    "ztools/scada/siemens",
+    "ztools/smb",
+    "ztools/smb/encoder",
+    "ztools/smb/gss",
+    "ztools/telnet",
+    "ztools/util",
+    "ztools/xssh",
+    "ztools/zct",
+    "ztools/zct/asn1",
+    "ztools/zct/client",
+    "ztools/zct/x509",
+    "ztools/zct/x509/pkix",
+    "ztools/zlog",
+  ]
+  pruneopts = "UT"
+  revision = "96cfb9ff48c382def164b0b1f5263f26e236afc4"
+
+[[projects]]
+  branch = "master"
   digest = "1:58305455efc020071a8d0ea7df2e37c6d905586d811bac6df3cf4a1a4e5e2249"
   name = "golang.org/x/crypto"
   packages = [
@@ -150,14 +184,6 @@
   ]
   pruneopts = "UT"
   revision = "6078986fec03a1dcc236c34816c71b0e05018fda"
-
-[[projects]]
-  branch = "master"
-  digest = "1:99e9f259afc6328efa223a59cdcfac9f974a9708c5dc1512948c995069ed1a5b"
-  name = "golang.org/x/sys"
-  packages = ["unix"]
-  pruneopts = "UT"
-  revision = "378d26f46672a356c46195c28f61bdb4c0a781dd"
 
 [[projects]]
   digest = "1:0c56024909189aee3364b7f21a95a27459f718aa7c199a5c111c36cfffd9eaef"
@@ -198,16 +224,37 @@
     "github.com/mreiferson/go-httpclient",
     "github.com/op/go-logging",
     "github.com/prometheus/client_golang/prometheus/promhttp",
-    "github.com/zmap/zcrypto/json",
     "github.com/zmap/zcrypto/tls",
     "github.com/zmap/zcrypto/x509",
-    "golang.org/x/crypto/curve25519",
-    "golang.org/x/crypto/ed25519",
+    "github.com/zmap/zgrab/zlib",
+    "github.com/zmap/zgrab/ztools/ftp",
+    "github.com/zmap/zgrab/ztools/http",
+    "github.com/zmap/zgrab/ztools/http/cookiejar",
+    "github.com/zmap/zgrab/ztools/http/httptest",
+    "github.com/zmap/zgrab/ztools/http/httptrace",
+    "github.com/zmap/zgrab/ztools/http/httputil",
+    "github.com/zmap/zgrab/ztools/http/nettrace",
+    "github.com/zmap/zgrab/ztools/processing",
+    "github.com/zmap/zgrab/ztools/scada/bacnet",
+    "github.com/zmap/zgrab/ztools/scada/dnp3",
+    "github.com/zmap/zgrab/ztools/scada/fox",
+    "github.com/zmap/zgrab/ztools/scada/siemens",
+    "github.com/zmap/zgrab/ztools/smb",
+    "github.com/zmap/zgrab/ztools/smb/encoder",
+    "github.com/zmap/zgrab/ztools/smb/gss",
+    "github.com/zmap/zgrab/ztools/telnet",
+    "github.com/zmap/zgrab/ztools/util",
+    "github.com/zmap/zgrab/ztools/xssh",
+    "github.com/zmap/zgrab/ztools/zct",
+    "github.com/zmap/zgrab/ztools/zct/asn1",
+    "github.com/zmap/zgrab/ztools/zct/client",
+    "github.com/zmap/zgrab/ztools/zct/x509",
+    "github.com/zmap/zgrab/ztools/zct/x509/pkix",
+    "github.com/zmap/zgrab/ztools/zlog",
     "golang.org/x/net/context",
     "golang.org/x/net/http2/hpack",
     "golang.org/x/net/idna",
     "golang.org/x/net/lex/httplex",
-    "golang.org/x/sys/unix",
     "golang.org/x/text/unicode/norm",
     "golang.org/x/text/width",
     "gopkg.in/check.v1",
