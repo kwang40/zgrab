@@ -16,7 +16,7 @@ import (
 	"net"
 	"testing"
 
-	"github.com/zmap/zgrab/ztools/xssh/terminal"
+	"github.com/kwang40/zgrab/ztools/xssh/terminal"
 )
 
 type serverType func(Channel, <-chan *Request, *testing.T)

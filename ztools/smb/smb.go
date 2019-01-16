@@ -25,7 +25,7 @@
 package smb
 
 import (
-	"github.com/zmap/zgrab/ztools/smb/gss"
+	"github.com/kwang40/zgrab/ztools/smb/gss"
 )
 
 const ProtocolSmb = "\xFFSMB"

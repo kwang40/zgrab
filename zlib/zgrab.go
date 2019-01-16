@@ -20,14 +20,14 @@ import (
 	"time"
 
 	"github.com/zmap/zcrypto/tls"
-	"github.com/zmap/zgrab/ztools/ftp"
-	"github.com/zmap/zgrab/ztools/scada/bacnet"
-	"github.com/zmap/zgrab/ztools/scada/dnp3"
-	"github.com/zmap/zgrab/ztools/scada/fox"
-	"github.com/zmap/zgrab/ztools/scada/siemens"
-	"github.com/zmap/zgrab/ztools/smb"
-	"github.com/zmap/zgrab/ztools/telnet"
-	"github.com/zmap/zgrab/ztools/xssh"
+	"github.com/kwang40/zgrab/ztools/ftp"
+	"github.com/kwang40/zgrab/ztools/scada/bacnet"
+	"github.com/kwang40/zgrab/ztools/scada/dnp3"
+	"github.com/kwang40/zgrab/ztools/scada/fox"
+	"github.com/kwang40/zgrab/ztools/scada/siemens"
+	"github.com/kwang40/zgrab/ztools/smb"
+	"github.com/kwang40/zgrab/ztools/telnet"
+	"github.com/kwang40/zgrab/ztools/xssh"
 )
 
 type Grab struct {

@@ -28,7 +28,7 @@ import (
 	"encoding/asn1"
 	"log"
 
-	"github.com/zmap/zgrab/ztools/smb/encoder"
+	"github.com/kwang40/zgrab/ztools/smb/encoder"
 )
 
 const SpnegoOid = "1.3.6.1.5.5.2"

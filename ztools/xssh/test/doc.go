@@ -3,5 +3,5 @@
 // license that can be found in the LICENSE file.
 
 // This package contains integration tests for the
-// github.com/zmap/zgrab/ztools/xssh.
-package test // import "github.com/zmap/zgrab/ztools/xssh/test"
+// github.com/kwang40/zgrab/ztools/xssh.
+package test // import "github.com/kwang40/zgrab/ztools/xssh/test"

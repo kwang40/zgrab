@@ -13,7 +13,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/zmap/zgrab/ztools/xssh"
+	"github.com/kwang40/zgrab/ztools/xssh"
 )
 
 type privKey struct {

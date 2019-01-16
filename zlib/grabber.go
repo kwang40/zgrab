@@ -29,16 +29,16 @@ import (
 	"time"
 
 	"github.com/zmap/zcrypto/tls"
-	"github.com/zmap/zgrab/ztools/ftp"
-	"github.com/zmap/zgrab/ztools/http"
-	"github.com/zmap/zgrab/ztools/processing"
-	"github.com/zmap/zgrab/ztools/scada/dnp3"
-	"github.com/zmap/zgrab/ztools/scada/fox"
-	"github.com/zmap/zgrab/ztools/scada/siemens"
-	"github.com/zmap/zgrab/ztools/smb"
-	"github.com/zmap/zgrab/ztools/telnet"
-	"github.com/zmap/zgrab/ztools/xssh"
-	"github.com/zmap/zgrab/ztools/zlog"
+	"github.com/kwang40/zgrab/ztools/ftp"
+	"github.com/kwang40/zgrab/ztools/http"
+	"github.com/kwang40/zgrab/ztools/processing"
+	"github.com/kwang40/zgrab/ztools/scada/dnp3"
+	"github.com/kwang40/zgrab/ztools/scada/fox"
+	"github.com/kwang40/zgrab/ztools/scada/siemens"
+	"github.com/kwang40/zgrab/ztools/smb"
+	"github.com/kwang40/zgrab/ztools/telnet"
+	"github.com/kwang40/zgrab/ztools/xssh"
+	"github.com/kwang40/zgrab/ztools/zlog"
 )
 
 var ErrRedirLocalhost = errors.New("Redirecting to Localhost")
@@ -46,6 +46,7 @@ var ErrRedirLocalhost = errors.New("Redirecting to Localhost")
 type GrabTarget struct {
 	Addr   net.IP
 	Domain string
+	FullUrl string
 }
 
 type grabTargetDecoder struct {
@@ -68,6 +69,10 @@ func (gtd *grabTargetDecoder) DecodeNext() (interface{}, error) {
 	// Check for a domain
 	if len(record) >= 2 {
 		target.Domain = record[1]
+	}
+
+	if len(record) >= 3 {
+		target.FullUrl = record[2]
 	}
 	return target, nil
 }
@@ -295,6 +300,137 @@ func makeHTTPGrabber(config *Config, grabData *GrabData) func(string, string, st
 			fullURL = "http://" + urlHost + endpoint
 		}
 
+		u, err := url.Parse(fullURL)
+		if err != nil {
+			return err
+		}
+
+		if httpHost == "" {
+			httpHost = u.Host
+		}
+
+		// Remove host port if using default port
+		if containsPort(httpHost) && usingDefaultPort(u.Scheme, config.Port) {
+			hostWithoutPort, _, err := net.SplitHostPort(httpHost)
+			if err != nil {
+				return err
+			}
+			httpHost = hostWithoutPort
+		}
+
+		var req *http.Request
+		var resp *http.Response
+
+		switch config.HTTP.Method {
+		case "GET":
+			req, err = http.NewRequestWithHost("GET", fullURL, httpHost, nil)
+		case "HEAD":
+			req, err = http.NewRequestWithHost("HEAD", fullURL, httpHost, nil)
+		default:
+			zlog.Fatalf("Bad HTTP Method: %s. Valid options are: GET, HEAD.", config.HTTP.Method)
+		}
+		if err == nil {
+			req.Header.Set("Accept", "*/*")
+			resp, err = client.Do(req)
+		}
+		if resp != nil && resp.Body != nil {
+			defer resp.Body.Close()
+		}
+		grabData.HTTP.Response = resp
+
+		if err != nil {
+			if urlError, ok := err.(*url.Error); ok {
+				if urlError.Err == ErrRedirLocalhost {
+					err = nil
+				}
+			}
+		}
+
+		if err != nil {
+			config.ErrorLog.Errorf("Could not connect to remote host %s: %s", fullURL, err.Error())
+			return err
+		}
+
+		b := new(bytes.Buffer)
+		maxReadLen := int64(config.HTTP.MaxSize) * 1024
+		readLen := maxReadLen
+		if resp.ContentLength >= 0 && resp.ContentLength < maxReadLen {
+			readLen = resp.ContentLength
+		}
+		io.CopyN(b, resp.Body, readLen)
+		grabData.HTTP.Response.BodyText = b.String()
+		if len(grabData.HTTP.Response.BodyText) > 0 {
+			m := sha256.New()
+			m.Write(b.Bytes())
+			grabData.HTTP.Response.BodySHA256 = m.Sum(nil)
+		}
+
+		return nil
+	}
+
+	return g
+}
+
+func makeHTTPGrabberWithFullUrl(config *Config, grabData *GrabData) func(string, string, string, string) error {
+	g := func(urlHost, endpoint, httpHost, fullURL string) (err error) {
+
+		var tlsConfig *tls.Config
+		if config.TLS {
+			tlsConfig = makeTLSConfig(config, httpHost)
+		}
+
+		transport := &http.Transport{
+			Proxy:               nil, // TODO: implement proxying
+			Dial:                makeNetDialer(config),
+			DisableKeepAlives:   false,
+			DisableCompression:  false,
+			MaxIdleConnsPerHost: config.HTTP.MaxRedirects,
+			TLSClientConfig:     tlsConfig,
+		}
+
+		client := http.MakeNewClient()
+		client.UserAgent = config.HTTP.UserAgent
+		client.CheckRedirect = func(req *http.Request, res *http.Response, via []*http.Request) error {
+			if !config.HTTP.FollowLocalhostRedirects && redirectsToLocalhost(req.URL.Hostname()) {
+				return ErrRedirLocalhost
+			}
+			grabData.HTTP.RedirectResponseChain = append(grabData.HTTP.RedirectResponseChain, res)
+			b := new(bytes.Buffer)
+			maxReadLen := int64(config.HTTP.MaxSize) * 1024
+			readLen := maxReadLen
+			if res.ContentLength >= 0 && res.ContentLength < maxReadLen {
+				readLen = res.ContentLength
+			}
+			io.CopyN(b, res.Body, readLen)
+			res.BodyText = b.String()
+			if len(res.BodyText) > 0 {
+				m := sha256.New()
+				m.Write(b.Bytes())
+				res.BodySHA256 = m.Sum(nil)
+			}
+
+			if len(via) > config.HTTP.MaxRedirects {
+				return errors.New(fmt.Sprintf("stopped after %d redirects", config.HTTP.MaxRedirects))
+			}
+
+			if req.URL.Scheme == "https" && transport.TLSClientConfig == nil {
+				transport.TLSClientConfig = makeTLSConfig(config, req.URL.Host)
+			}
+
+			return nil
+		}
+		client.Jar = nil // Don't send or receive cookies (otherwise use CookieJar)
+		client.Transport = transport
+
+		/*
+		var fullURL string
+
+		if config.TLS {
+			fullURL = "https://" + urlHost + endpoint
+		} else {
+			fullURL = "http://" + urlHost + endpoint
+		}
+		*/
 		u, err := url.Parse(fullURL)
 		if err != nil {
 			return err
@@ -698,7 +834,9 @@ func GrabBanner(config *Config, target *GrabTarget) *Grab {
 		}
 	} else {
 		grabData := GrabData{HTTP: new(HTTP)}
+		httpGrabberFullUrl := makeHTTPGrabberWithFullUrl(config, &grabData)
 		httpGrabber := makeHTTPGrabber(config, &grabData)
+
 		port := strconv.FormatUint(uint64(config.Port), 10)
 		t := time.Now()
 		var rhost string
@@ -708,7 +846,12 @@ func GrabBanner(config *Config, target *GrabTarget) *Grab {
 			rhost = net.JoinHostPort(target.Addr.String(), port)
 		}
 
-		err := httpGrabber(rhost, config.HTTP.Endpoint, target.Domain)
+		var err error
+		if config.FullURL {
+			err = httpGrabberFullUrl(rhost, config.HTTP.Endpoint, target.Domain, target.FullUrl)
+		} else {
+			err = httpGrabber(rhost, config.HTTP.Endpoint, target.Domain)
+		}
 
 		return &Grab{
 			IP:     target.Addr,

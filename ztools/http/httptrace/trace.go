@@ -13,7 +13,7 @@ import (
 	"time"
 
 	"github.com/zmap/zcrypto/tls"
-	"github.com/zmap/zgrab/ztools/http/nettrace"
+	"github.com/kwang40/zgrab/ztools/http/nettrace"
 )
 
 // unique type to prevent assignment.

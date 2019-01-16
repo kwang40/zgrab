@@ -28,9 +28,10 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/zmap/zcrypto/tls"
 	"github.com/zmap/zcrypto/x509"
-	"github.com/zmap/zgrab/zlib"
-	"github.com/zmap/zgrab/ztools/processing"
-	"github.com/zmap/zgrab/ztools/zlog"
+	"github.com/kwang40/zgrab/zlib"
+	"github.com/kwang40/zgrab/ztools/processing"
+	"github.com/kwang40/zgrab/ztools/zlog"
+	"fmt"
 )
 
 // Command-line flags
@@ -136,6 +137,7 @@ func init() {
 	flag.BoolVar(&config.SMB.SMB, "smb", false, "Scan for SMB")
 	flag.IntVar(&config.SMB.Protocol, "smb-protocol", 1, "Specify which SMB protocol to scan for")
 
+	flag.BoolVar(&config.FullURL, "fullURL", false, "Provide full url for each domain")
 	flag.Parse()
 
 	// Validate Go Runtime config
@@ -170,6 +172,10 @@ func init() {
 	tv := strings.ToUpper(tlsVersion)
 	if tv != "" {
 		config.TLS = true
+	}
+
+	if config.FullURL && (config.LookupDomain || len(config.HTTP.Endpoint) == 0) {
+		zlog.Fatal("full url mode requires providing ip4 address and only supports http right now")
 	}
 
 	if config.TLS || config.HTTP.MaxRedirects > 0 {
@@ -357,6 +363,7 @@ func main() {
 		}()
 	}
 
+	fmt.Print(config.HTTP.Endpoint)
 	decoder := zlib.NewGrabTargetDecoder(inputFile, config.LookupDomain)
 	marshaler := zlib.NewGrabMarshaler()
 	worker := zlib.NewGrabWorker(&config)

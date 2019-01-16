@@ -17,7 +17,7 @@ package zlib
 import (
 	"strings"
 
-	"github.com/zmap/zgrab/ztools/http"
+	"github.com/kwang40/zgrab/ztools/http"
 )
 
 var knownHeaders map[string]int

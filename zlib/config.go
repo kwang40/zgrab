@@ -18,7 +18,7 @@ import (
 	"time"
 
 	"github.com/zmap/zcrypto/x509"
-	"github.com/zmap/zgrab/ztools/zlog"
+	"github.com/kwang40/zgrab/ztools/zlog"
 )
 
 type HTTPConfig struct {
@@ -126,4 +126,7 @@ type Config struct {
 
 	// SMB
 	SMB SMBScanConfig
+
+	// Has Full URL
+	FullURL bool
 }

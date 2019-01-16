@@ -12,7 +12,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/zmap/zgrab/ztools/http"
+	"github.com/kwang40/zgrab/ztools/http"
 )
 
 // tNow is the synthetic current time used as now during testing.

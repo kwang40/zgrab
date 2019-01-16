@@ -34,7 +34,7 @@ import (
 	"log"
 	"net"
 
-	"github.com/zmap/zgrab/ztools/smb/encoder"
+	"github.com/kwang40/zgrab/ztools/smb/encoder"
 )
 
 type Session struct {

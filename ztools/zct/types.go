@@ -7,7 +7,7 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/zmap/zgrab/ztools/zct/x509"
+	"github.com/kwang40/zgrab/ztools/zct/x509"
 )
 
 const (

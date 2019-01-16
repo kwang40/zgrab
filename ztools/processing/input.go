@@ -15,7 +15,7 @@
 package processing
 
 import (
-	"github.com/zmap/zgrab/ztools/zlog"
+	"github.com/kwang40/zgrab/ztools/zlog"
 	"io"
 	"sync"
 )

@@ -16,7 +16,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/zmap/zgrab/ztools/http"
+	"github.com/kwang40/zgrab/ztools/http"
 )
 
 // onExitFlushLoop is a callback set by tests to detect the state of the
