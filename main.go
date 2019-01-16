@@ -364,7 +364,7 @@ func main() {
 	}
 
 	fmt.Print(config.HTTP.Endpoint)
-	decoder := zlib.NewGrabTargetDecoder(inputFile, config.LookupDomain)
+	decoder := zlib.NewGrabTargetDecoder(inputFile, config.LookupDomain, config.FullURL)
 	marshaler := zlib.NewGrabMarshaler()
 	worker := zlib.NewGrabWorker(&config)
 

@@ -53,6 +53,10 @@ type grabTargetDecoder struct {
 	reader *csv.Reader
 }
 
+type garbTargetUrlDecoder struct {
+	reader *csv.Reader
+}
+
 func (gtd *grabTargetDecoder) DecodeNext() (interface{}, error) {
 	record, err := gtd.reader.Read()
 	if err != nil {
@@ -71,9 +75,31 @@ func (gtd *grabTargetDecoder) DecodeNext() (interface{}, error) {
 		target.Domain = record[1]
 	}
 
-	if len(record) >= 3 {
-		target.FullUrl = record[2]
+	return target, nil
+}
+
+func (gtd *garbTargetUrlDecoder) DecodeNext() (interface{}, error) {
+	record, err := gtd.reader.Read()
+	if err != nil {
+		return nil, err
 	}
+	if len(record) != 2 {
+		return nil, errors.New("Invalid grab target (no fields or no urls)")
+	}
+	var target GrabTarget
+	target.Addr = net.ParseIP(record[0])
+	if target.Addr == nil {
+		return nil, fmt.Errorf("Invalid IP address %s", record[0])
+	}
+	// Check for a domain
+	u, err := url.Parse(record[1])
+	if err != nil {
+		return nil, fmt.Errorf("Invalid URL %s", record[1])
+	}
+
+	target.Domain = u.Host
+	target.FullUrl = record[1]
+
 	return target, nil
 }
 
@@ -96,9 +122,15 @@ func (gdd *grabDomainDecoder) DecodeNext() (interface{}, error) {
 	return target, nil
 }
 
-func NewGrabTargetDecoder(reader io.Reader, domainOnly bool) processing.Decoder {
+func NewGrabTargetDecoder(reader io.Reader, domainOnly bool, fullURL bool) processing.Decoder {
 
-	if domainOnly {
+	if fullURL {
+		csvReader := csv.NewReader(reader)
+		d := garbTargetUrlDecoder{
+			reader: csvReader,
+		}
+		return &d
+	} else if domainOnly {
 		domainReader := bufio.NewReader(reader)
 		d := grabDomainDecoder{
 			reader: domainReader,
