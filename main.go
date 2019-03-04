@@ -137,7 +137,7 @@ func init() {
 	flag.BoolVar(&config.SMB.SMB, "smb", false, "Scan for SMB")
 	flag.IntVar(&config.SMB.Protocol, "smb-protocol", 1, "Specify which SMB protocol to scan for")
 
-	flag.BoolVar(&config.FullURL, "fullURL", false, "Provide full url for each domain")
+	flag.BoolVar(&config.FullURL, "full-url", false, "Provide full url for each domain")
 	flag.Parse()
 
 	// Validate Go Runtime config

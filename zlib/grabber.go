@@ -850,6 +850,7 @@ func GrabBanner(config *Config, target *GrabTarget) *Grab {
 			return &Grab{
 				IP:             target.Addr,
 				Domain:         target.Domain,
+				URL:			target.FullUrl,
 				Time:           t,
 				Error:          dialErr,
 				ErrorComponent: "connect",
@@ -859,6 +860,7 @@ func GrabBanner(config *Config, target *GrabTarget) *Grab {
 		return &Grab{
 			IP:             target.Addr,
 			Domain:         target.Domain,
+			URL:			target.FullUrl,
 			Time:           t,
 			Data:           conn.grabData,
 			Error:          err,
@@ -888,6 +890,7 @@ func GrabBanner(config *Config, target *GrabTarget) *Grab {
 		return &Grab{
 			IP:     target.Addr,
 			Domain: target.Domain,
+			URL:			target.FullUrl,
 			Time:   t,
 			Data:   grabData,
 			Error:  err,
