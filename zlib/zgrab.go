@@ -101,7 +101,9 @@ func (g *Grab) UnmarshalJSON(b []byte) error {
 	if g.Time, err = time.Parse(time.RFC3339, eg.Time); err != nil {
 		return err
 	}
-	panic("unimplemented")
+	g.Data = *eg.Data
+	g.ErrorComponent = *eg.Error + eg.ErrorComponent
+	return nil
 }
 
 func (g *Grab) status() status {
