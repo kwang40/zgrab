@@ -19,7 +19,7 @@ import (
 	"net"
 	"time"
 
-	"github.com/kwang40/zcrypto/tls"
+	"github.com/zmap/zcrypto/tls"
 	"github.com/kwang40/zgrab/ztools/ftp"
 	"github.com/kwang40/zgrab/ztools/scada/bacnet"
 	"github.com/kwang40/zgrab/ztools/scada/dnp3"
